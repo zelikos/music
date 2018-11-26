@@ -105,11 +105,6 @@ app_dep = declare_dependency(
 
 meson.add_install_script('meson/post_install.py')
 
-if get_option('build-plugins')
-  plugins = get_option('plugins')
-  subdir('plugins')
-endif
-
 subdir('po')
 
 if get_option('documentation')
