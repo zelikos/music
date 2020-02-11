@@ -117,7 +117,7 @@ public class Music.BrowserColumn : Gtk.Grid {
     public bool first_item_selected { get { return _selected == null; } }
 
     public Category category { get; construct set; }
-    public Gtk.CheckMenuItem menu_item { get; construct set;}
+    public Gtk.CheckButton menu_item { get; construct set;}
 
     private ColumnBrowser miller_parent;
 
@@ -132,7 +132,8 @@ public class Music.BrowserColumn : Gtk.Grid {
         this.category = category;
         orientation = Gtk.Orientation.HORIZONTAL;
 
-        menu_item = new Gtk.CheckMenuItem.with_label (category.to_string ());
+        menu_item = new Gtk.CheckButton.with_label (category.to_string ());
+        menu_item.margin = 12;
         this.visible = false;
 
         view = new Gtk.TreeView ();

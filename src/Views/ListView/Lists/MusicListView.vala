@@ -35,8 +35,9 @@ public class Music.MusicListView : GenericList {
     public MediaMenu media_action_menu { get; private set; }
 
     //for header column chooser
-    protected Gtk.Menu column_chooser_menu;
-    private Gtk.MenuItem autosize_menu_item;
+    protected Gtk.Popover column_chooser_menu;
+    private Gtk.Grid column_chooser_menu_grid;
+    private Gtk.ModelButton autosize_menu_item;
 
     public MusicListView (ViewWrapper view_wrapper, TreeViewSetup tvs) {
         Object (
@@ -71,20 +72,26 @@ public class Music.MusicListView : GenericList {
         }
 
         if (column_chooser_menu == null) {
-            autosize_menu_item = new Gtk.MenuItem.with_label (_("Autosize Columns"));
+            autosize_menu_item = new Gtk.ModelButton ();
+            autosize_menu_item.margin = 12;
+            autosize_menu_item.text = _("Autosize Columns");
             autosize_menu_item.activate.connect (columns_autosize);
 
-            column_chooser_menu = new Gtk.Menu ();
-            column_chooser_menu.append (autosize_menu_item);
-            column_chooser_menu.append (new Gtk.SeparatorMenuItem ());
-            column_chooser_menu.show_all ();
+            column_chooser_menu = new Gtk.Popover (null);
+            column_chooser_menu_grid = new Gtk.Grid ();
+            column_chooser_menu_grid.orientation = Gtk.Orientation.VERTICAL;
+            column_chooser_menu_grid.add (autosize_menu_item);
+            column_chooser_menu_grid.add (new Gtk.Separator (HORIZONTAL));
+            column_chooser_menu_grid.show_all ();
         }
 
-        var menu_item = new Gtk.CheckMenuItem.with_label (tvc.title);
+        var menu_item = new Gtk.CheckButton.with_label (tvc.title);
+        menu_item.margin = 12;
         menu_item.active = tvc.visible;
 
-        column_chooser_menu.append (menu_item);
-        column_chooser_menu.show_all ();
+        column_chooser_menu_grid.add (menu_item);
+        column_chooser_menu_grid.show_all ();
+        column_chooser_menu.add (column_chooser_menu_grid);
 
         // Show/hide the current column
         menu_item.toggled.connect (() => {
@@ -193,7 +200,8 @@ public class Music.MusicListView : GenericList {
 
     private bool view_header_click (Gdk.EventButton e, bool is_selector_col) {
         if (e.button == Gdk.BUTTON_SECONDARY || is_selector_col) {
-            column_chooser_menu.popup_at_pointer (e);
+            column_chooser_menu.set_relative_to (parent_wrapper);
+            column_chooser_menu.popup ();
             return true;
         }
 

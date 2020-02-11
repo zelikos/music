@@ -132,21 +132,32 @@ public class Music.ColumnBrowser : Gtk.Grid {
     // We provide the data. No need to search again outside
     private Gee.Collection<Media> search_results = new Gee.LinkedList<Media> ();
 
-    private Gtk.Menu column_chooser_menu;
-    private Gtk.RadioMenuItem top_menu_item;
-    private Gtk.RadioMenuItem left_menu_item;
-    private Gtk.RadioMenuItem automatic_menu_item;
+    private Gtk.Popover column_chooser_menu;
+    private Gtk.Grid column_chooser_menu_grid;
+    private Gtk.RadioButton top_menu_item;
+    private Gtk.RadioButton left_menu_item;
+    private Gtk.RadioButton automatic_menu_item;
 
     public ColumnBrowser (ViewWrapper view_wrapper) {
         Object (view_wrapper: view_wrapper);
     }
 
     construct {
-        automatic_menu_item = new Gtk.RadioMenuItem.with_label (new SList<Gtk.RadioMenuItem> (), _("Automatic"));
-        left_menu_item = new Gtk.RadioMenuItem.with_label (automatic_menu_item.get_group (), _("On Left"));
-        top_menu_item = new Gtk.RadioMenuItem.with_label (left_menu_item.get_group (), _("On Top"));
+        automatic_menu_item = new Gtk.RadioButton.with_label (new SList<Gtk.RadioButton> (), _("Automatic"));
+        automatic_menu_item.margin = 12;
+        //automatic_menu_item.margin_bottom = 6;
+        left_menu_item = new Gtk.RadioButton.with_label (automatic_menu_item.get_group (), _("On Left"));
+        left_menu_item.margin = 12;
+        //left_menu_item.margin_top = 6;
+        top_menu_item = new Gtk.RadioButton.with_label (left_menu_item.get_group (), _("On Top"));
+        top_menu_item.margin = 12;
+        //top_menu_item.margin_top = 6;
+        //top_menu_item.margin_bottom = 6;
 
-        column_chooser_menu = new Gtk.Menu ();
+        column_chooser_menu = new Gtk.Popover (null);
+        var column_chooser_scroll = new Gtk.ScrolledWindow (null, null);
+        column_chooser_menu_grid = new Gtk.Grid ();
+        column_chooser_menu_grid.orientation = Gtk.Orientation.VERTICAL;
 
         var categories = new BrowserColumn.Category [0];
         categories += BrowserColumn.Category.RATING;
@@ -171,11 +182,12 @@ public class Music.ColumnBrowser : Gtk.Grid {
 
         visible_columns = visible_categories;
 
-        column_chooser_menu.append (new Gtk.SeparatorMenuItem ());
-        column_chooser_menu.append (automatic_menu_item);
-        column_chooser_menu.append (top_menu_item);
-        column_chooser_menu.append (left_menu_item);
-        column_chooser_menu.show_all ();
+        column_chooser_menu_grid.add (new Gtk.Separator (HORIZONTAL));
+        column_chooser_menu_grid.add (automatic_menu_item);
+        column_chooser_menu_grid.add (top_menu_item);
+        column_chooser_menu_grid.add (left_menu_item);
+        column_chooser_menu_grid.show_all ();
+        column_chooser_menu.add (column_chooser_menu_grid);
 
         orientation = Gtk.Orientation.HORIZONTAL;
         position = (Position) App.saved_state.get_int ("column-browser-position");
@@ -224,7 +236,7 @@ public class Music.ColumnBrowser : Gtk.Grid {
         column.hexpand = column.vexpand = true;
         attach (column, (int)type, 0, 1, 1);
 
-        column_chooser_menu.append (column.menu_item);
+        column_chooser_menu_grid.add (column.menu_item);
 
         column.row_activated.connect (column_row_activated);
         column.header_clicked.connect (column_header_clicked);
@@ -480,7 +492,8 @@ public class Music.ColumnBrowser : Gtk.Grid {
 
     private void column_header_clicked (Gdk.EventButton e) {
         if (e.button == Gdk.BUTTON_SECONDARY) { // secondary button
-            column_chooser_menu.popup_at_pointer (e);
+            column_chooser_menu.set_relative_to (view_wrapper);
+            column_chooser_menu.popup ();
         }
     }
 
