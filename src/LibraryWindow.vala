@@ -52,7 +52,6 @@ public class Music.LibraryWindow : LibraryWindowInterface, Gtk.ApplicationWindow
     private PreferencesWindow? preferences = null;
     private Settings.Main main_settings;
     private TopDisplay top_display;
-    private Gtk.Popover menu;
 
     internal Gee.HashMap<unowned Playlist, ViewWrapper> match_playlists;
     private Gee.HashMap<string, DeviceView> match_devices;
@@ -215,23 +214,18 @@ public class Music.LibraryWindow : LibraryWindowInterface, Gtk.ApplicationWindow
         var import_label = new Gtk.Label (_("Import to Library…"));
         import_label.halign = Gtk.Align.START;
 
-        var import_menuitem = new Gtk.Button ();
-        import_menuitem.get_style_context ().add_class (Gtk.STYLE_CLASS_MENUITEM);
-        import_menuitem.add (import_label);
+        var import_menuitem = new Gtk.ModelButton ();
+        import_menuitem.text = import_label.label;
         import_menuitem.action_name = ACTION_PREFIX + ACTION_IMPORT;
         import_menuitem.margin = 6;
-        //import_menuitem.margin_bottom = 6;
 
         var preferences_label = new Gtk.Label (_("Preferences"));
         preferences_label.halign = Gtk.Align.START;
 
-        var preferences_menuitem = new Gtk.Button ();
-        preferences_menuitem.get_style_context ().add_class (Gtk.STYLE_CLASS_MENUITEM);
-        preferences_menuitem.hexpand = true;
-        preferences_menuitem.add (preferences_label);
-        preferences_menuitem.clicked.connect (edit_preferences_click);
+        var preferences_menuitem = new Gtk.ModelButton ();
+        preferences_menuitem.text = preferences_label.label;
         preferences_menuitem.margin = 6;
-        //preferences_menuitem.margin_top = 6;
+        preferences_menuitem.clicked.connect (edit_preferences_click);
 
         var menu_button = new Gtk.MenuButton ();
         menu_button.image = new Gtk.Image.from_icon_name ("open-menu", Gtk.IconSize.LARGE_TOOLBAR);
@@ -244,10 +238,10 @@ public class Music.LibraryWindow : LibraryWindowInterface, Gtk.ApplicationWindow
         popover_grid.attach (preferences_menuitem, 0, 2, 1, 1);
         popover_grid.show_all ();
 
-        menu = new Gtk.Popover (menu_button);
-        menu.add (popover_grid);
+        var menu_popover = new Gtk.Popover (menu_button);
+        menu_popover.add (popover_grid);
         
-        menu_button.popover = menu;
+        menu_button.popover = menu_popover;
 
         var previous_button = new Gtk.Button.from_icon_name (
             "media-skip-backward-symbolic",
@@ -1037,7 +1031,6 @@ public class Music.LibraryWindow : LibraryWindowInterface, Gtk.ApplicationWindow
     }
 
     public virtual void action_import () {
-        menu.popdown ();
         if (!library_manager.doing_file_operations ()) {
             var file_chooser = new Gtk.FileChooserNative (
                 _("Import Music"),
@@ -1104,7 +1097,6 @@ public class Music.LibraryWindow : LibraryWindowInterface, Gtk.ApplicationWindow
     }
 
     private void edit_preferences_click () {
-        menu.popdown ();
         if (preferences == null)
             preferences = new PreferencesWindow ();
         preferences.show_all ();
