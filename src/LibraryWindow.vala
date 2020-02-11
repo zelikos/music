@@ -211,22 +211,37 @@ public class Music.LibraryWindow : LibraryWindowInterface, Gtk.ApplicationWindow
         destroy.connect (on_quit);
 
 
-        var import_menuitem = new Gtk.MenuItem.with_label (_("Import to Library…"));
+        var import_label = new Gtk.Label (_("Import to Library…"));
+
+        var import_menuitem = new Gtk.Button ();
+        import_menuitem.get_style_context ().add_class (Gtk.STYLE_CLASS_FLAT);
+        import_menuitem.get_style_context ().add_class (Gtk.STYLE_CLASS_MENUITEM);
+        import_menuitem.add (import_label);
         import_menuitem.action_name = ACTION_PREFIX + ACTION_IMPORT;
 
-        var preferences_menuitem = new Gtk.MenuItem.with_label (_("Preferences"));
-        preferences_menuitem.activate.connect (edit_preferences_click);
+        var preferences_label = new Gtk.Label (_("Preferences"));
 
-        var menu = new Gtk.Menu ();
-        menu.append (import_menuitem);
-        menu.append (new Gtk.SeparatorMenuItem ());
-        menu.append (preferences_menuitem);
-        menu.show_all ();
+        var preferences_menuitem = new Gtk.Button ();
+        preferences_menuitem.get_style_context ().add_class (Gtk.STYLE_CLASS_FLAT);
+        preferences_menuitem.get_style_context ().add_class (Gtk.STYLE_CLASS_MENUITEM);
+        preferences_menuitem.add (preferences_label);
+        preferences_menuitem.clicked.connect (edit_preferences_click);
 
         var menu_button = new Gtk.MenuButton ();
         menu_button.image = new Gtk.Image.from_icon_name ("open-menu", Gtk.IconSize.LARGE_TOOLBAR);
-        menu_button.popup = menu;
         menu_button.valign = Gtk.Align.CENTER;
+
+        var popover_grid = new Gtk.Grid ();
+        popover_grid.orientation = Gtk.Orientation.VERTICAL;
+        popover_grid.add (import_menuitem);
+        popover_grid.add (new Gtk.Separator (HORIZONTAL));
+        popover_grid.add (preferences_menuitem);
+        popover_grid.show_all ();
+
+        var menu = new Gtk.Popover (menu_button);
+        menu.add (popover_grid);
+        
+        menu_button.popover = menu;
 
         var previous_button = new Gtk.Button.from_icon_name (
             "media-skip-backward-symbolic",
