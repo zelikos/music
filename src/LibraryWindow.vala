@@ -211,21 +211,15 @@ public class Music.LibraryWindow : LibraryWindowInterface, Gtk.ApplicationWindow
         destroy.connect (on_quit);
 
 
-        var import_label = new Gtk.Label (_("Import to Library…"));
-        import_label.halign = Gtk.Align.START;
-
         var import_menuitem = new Gtk.ModelButton ();
-        import_menuitem.text = import_label.label;
         import_menuitem.action_name = ACTION_PREFIX + ACTION_IMPORT;
         import_menuitem.margin = 6;
-
-        var preferences_label = new Gtk.Label (_("Preferences"));
-        preferences_label.halign = Gtk.Align.START;
+        import_menuitem.text = _("Import to Library…");
 
         var preferences_menuitem = new Gtk.ModelButton ();
-        preferences_menuitem.text = preferences_label.label;
-        preferences_menuitem.margin = 6;
         preferences_menuitem.clicked.connect (edit_preferences_click);
+        preferences_menuitem.margin = 6;
+        preferences_menuitem.text = _("Preferences");
 
         var menu_button = new Gtk.MenuButton ();
         menu_button.image = new Gtk.Image.from_icon_name ("open-menu", Gtk.IconSize.LARGE_TOOLBAR);
