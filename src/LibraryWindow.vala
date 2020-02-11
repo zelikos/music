@@ -213,20 +213,19 @@ public class Music.LibraryWindow : LibraryWindowInterface, Gtk.ApplicationWindow
 
 
         var import_label = new Gtk.Label (_("Import to Library…"));
-        import_label.hexpand = true;
+        import_label.halign = Gtk.Align.START;
 
         var import_menuitem = new Gtk.Button ();
         import_menuitem.get_style_context ().add_class (Gtk.STYLE_CLASS_MENUITEM);
-        import_menuitem.halign = Gtk.Align.START;
         import_menuitem.add (import_label);
         import_menuitem.action_name = ACTION_PREFIX + ACTION_IMPORT;
 
         var preferences_label = new Gtk.Label (_("Preferences"));
-        preferences_label.hexpand = true;
+        preferences_label.halign = Gtk.Align.START;
 
         var preferences_menuitem = new Gtk.Button ();
         preferences_menuitem.get_style_context ().add_class (Gtk.STYLE_CLASS_MENUITEM);
-        preferences_menuitem.halign = Gtk.Align.START;
+        preferences_menuitem.hexpand = true;
         preferences_menuitem.add (preferences_label);
         preferences_menuitem.clicked.connect (edit_preferences_click);
 
@@ -235,10 +234,10 @@ public class Music.LibraryWindow : LibraryWindowInterface, Gtk.ApplicationWindow
         menu_button.valign = Gtk.Align.CENTER;
 
         var popover_grid = new Gtk.Grid ();
-        popover_grid.orientation = Gtk.Orientation.VERTICAL;
-        popover_grid.add (import_menuitem);
-        popover_grid.add (new Gtk.Separator (HORIZONTAL));
-        popover_grid.add (preferences_menuitem);
+        popover_grid.orientation = Gtk.Orientation.VERTICAL;        
+        popover_grid.attach (import_menuitem, 1, 1, 1, 1);
+        popover_grid.attach (new Gtk.Separator (HORIZONTAL), 1, 2, 1, 1);
+        popover_grid.attach (preferences_menuitem, 1, 3, 1, 1);
         popover_grid.show_all ();
 
         menu = new Gtk.Popover (menu_button);
