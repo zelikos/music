@@ -52,6 +52,7 @@ public class Music.LibraryWindow : LibraryWindowInterface, Gtk.ApplicationWindow
     private PreferencesWindow? preferences = null;
     private Settings.Main main_settings;
     private TopDisplay top_display;
+    private Gtk.Popover menu;
 
     internal Gee.HashMap<unowned Playlist, ViewWrapper> match_playlists;
     private Gee.HashMap<string, DeviceView> match_devices;
@@ -212,18 +213,20 @@ public class Music.LibraryWindow : LibraryWindowInterface, Gtk.ApplicationWindow
 
 
         var import_label = new Gtk.Label (_("Import to Library…"));
+        import_label.hexpand = true;
 
         var import_menuitem = new Gtk.Button ();
-        import_menuitem.get_style_context ().add_class (Gtk.STYLE_CLASS_FLAT);
         import_menuitem.get_style_context ().add_class (Gtk.STYLE_CLASS_MENUITEM);
+        import_menuitem.halign = Gtk.Align.START;
         import_menuitem.add (import_label);
         import_menuitem.action_name = ACTION_PREFIX + ACTION_IMPORT;
 
         var preferences_label = new Gtk.Label (_("Preferences"));
+        preferences_label.hexpand = true;
 
         var preferences_menuitem = new Gtk.Button ();
-        preferences_menuitem.get_style_context ().add_class (Gtk.STYLE_CLASS_FLAT);
         preferences_menuitem.get_style_context ().add_class (Gtk.STYLE_CLASS_MENUITEM);
+        preferences_menuitem.halign = Gtk.Align.START;
         preferences_menuitem.add (preferences_label);
         preferences_menuitem.clicked.connect (edit_preferences_click);
 
@@ -238,7 +241,7 @@ public class Music.LibraryWindow : LibraryWindowInterface, Gtk.ApplicationWindow
         popover_grid.add (preferences_menuitem);
         popover_grid.show_all ();
 
-        var menu = new Gtk.Popover (menu_button);
+        menu = new Gtk.Popover (menu_button);
         menu.add (popover_grid);
         
         menu_button.popover = menu;
@@ -1031,6 +1034,7 @@ public class Music.LibraryWindow : LibraryWindowInterface, Gtk.ApplicationWindow
     }
 
     public virtual void action_import () {
+        menu.popdown ();
         if (!library_manager.doing_file_operations ()) {
             var file_chooser = new Gtk.FileChooserNative (
                 _("Import Music"),
@@ -1097,6 +1101,7 @@ public class Music.LibraryWindow : LibraryWindowInterface, Gtk.ApplicationWindow
     }
 
     private void edit_preferences_click () {
+        menu.popdown ();
         if (preferences == null)
             preferences = new PreferencesWindow ();
         preferences.show_all ();
